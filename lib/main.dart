@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'theme/app_theme.dart';
-import 'screens/chat_list_screen.dart';
+import 'screens/login_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,8 +17,15 @@ void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  ThemeMode _themeMode = ThemeMode.light;
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +33,9 @@ class MyApp extends StatelessWidget {
       title: 'Modern Chat App',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
-      home: const ChatListScreen(),
+      darkTheme: AppTheme.darkTheme,
+      themeMode: _themeMode,
+      home: const LoginScreen(),
     );
   }
 }
