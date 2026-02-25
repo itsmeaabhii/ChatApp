@@ -9,6 +9,8 @@ class MessageBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
@@ -19,30 +21,33 @@ class MessageBubble extends StatelessWidget {
           Flexible(
             flex: 4,
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               decoration: BoxDecoration(
+                gradient: message.isSent
+                    ? AppGradients.messageBubbleGradient
+                    : null,
                 color: message.isSent
-                    ? AppColors.senderBubble
-                    : AppColors.receiverBubble,
+                    ? null
+                    : (isDark ? AppColors.darkReceiverBubble : AppColors.receiverBubble),
                 borderRadius: BorderRadius.only(
-                  topLeft: const Radius.circular(16),
-                  topRight: const Radius.circular(16),
+                  topLeft: const Radius.circular(20),
+                  topRight: const Radius.circular(20),
                   bottomLeft: message.isSent
-                      ? const Radius.circular(16)
+                      ? const Radius.circular(20)
                       : const Radius.circular(4),
                   bottomRight: message.isSent
                       ? const Radius.circular(4)
-                      : const Radius.circular(16),
+                      : const Radius.circular(20),
                 ),
-                boxShadow: message.isSent
-                    ? null
-                    : [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
-                          blurRadius: 5,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
+                boxShadow: [
+                  BoxShadow(
+                    color: message.isSent
+                        ? AppColors.primaryPurple.withOpacity(0.3)
+                        : Colors.black.withOpacity(isDark ? 0.2 : 0.08),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
@@ -50,7 +55,9 @@ class MessageBubble extends StatelessWidget {
                   Text(
                     message.message,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: AppColors.textDark,
+                          color: message.isSent
+                              ? AppColors.white
+                              : (isDark ? AppColors.textLight : AppColors.textDark),
                         ),
                   ),
                   const SizedBox(height: 4),
@@ -60,8 +67,10 @@ class MessageBubble extends StatelessWidget {
                       Text(
                         message.time,
                         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                              color: AppColors.textGrey,
-                              fontSize: 11,
+                              color: message.isSent
+                                  ? AppColors.white.withOpacity(0.8)
+                                  : AppColors.textGrey,
+                              fontSize: 10,
                             ),
                       ),
                       if (message.isSent) ...[
@@ -74,8 +83,8 @@ class MessageBubble extends StatelessWidget {
                                   : Icons.done,
                           size: 14,
                           color: message.isRead
-                              ? Colors.blue
-                              : AppColors.textGrey,
+                              ? const Color(0xFF64B5F6)
+                              : AppColors.white.withOpacity(0.8),
                         ),
                       ],
                     ],

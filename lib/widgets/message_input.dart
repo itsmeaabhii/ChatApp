@@ -33,93 +33,87 @@ class _MessageInputState extends State<MessageInput> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: isDark ? AppColors.cardDark : AppColors.white,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.08),
-            blurRadius: 10,
-            offset: const Offset(0, -2),
+            blurRadius: 15,
+            offset: const Offset(0, -4),
           ),
         ],
       ),
       child: SafeArea(
         child: Row(
           children: [
-            // Emoji Button
-            IconButton(
-              icon: const Icon(Icons.emoji_emotions_outlined),
-              color: AppColors.textGrey,
-              onPressed: () {},
+            // Attachment Button
+            Container(
+              decoration: BoxDecoration(
+                color: isDark ? AppColors.darkBackground : AppColors.lightBackground,
+                shape: BoxShape.circle,
+              ),
+              child: IconButton(
+                icon: const Icon(Icons.attach_file),
+                color: AppColors.primaryPurple,
+                onPressed: () {},
+              ),
             ),
+            const SizedBox(width: 8),
+            
             // Text Input Field
             Expanded(
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 decoration: BoxDecoration(
-                  color: AppColors.backgroundGrey,
+                  color: isDark ? AppColors.darkBackground : AppColors.lightBackground,
                   borderRadius: BorderRadius.circular(25),
                 ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: _controller,
-                        maxLines: null,
-                        textCapitalization: TextCapitalization.sentences,
-                        decoration: InputDecoration(
-                          hintText: 'Message',
-                          hintStyle:
-                              Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                    color: AppColors.textGrey,
-                                  ),
-                          border: InputBorder.none,
-                          contentPadding: const EdgeInsets.symmetric(
-                            vertical: 10,
-                          ),
+                child: TextField(
+                  controller: _controller,
+                  maxLines: null,
+                  textCapitalization: TextCapitalization.sentences,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                  decoration: InputDecoration(
+                    hintText: 'Message',
+                    hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppColors.textGrey,
                         ),
-                        onSubmitted: (_) => _sendMessage(),
-                      ),
-                    ),
-                    // Attachment Button
-                    IconButton(
-                      icon: const Icon(Icons.attach_file),
-                      color: AppColors.textGrey,
-                      iconSize: 22,
-                      onPressed: () {},
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
-                    ),
-                    const SizedBox(width: 4),
-                    // Camera Button
-                    IconButton(
-                      icon: const Icon(Icons.camera_alt),
-                      color: AppColors.textGrey,
-                      iconSize: 22,
-                      onPressed: () {},
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
-                    ),
-                  ],
+                    border: InputBorder.none,
+                    contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                  ),
+                  onSubmitted: (_) => _sendMessage(),
                 ),
               ),
             ),
             const SizedBox(width: 8),
-            // Send/Voice Button
+            
+            // Send Button
             GestureDetector(
               onTap: _isTyping ? _sendMessage : () {},
               child: Container(
                 width: 48,
                 height: 48,
                 decoration: BoxDecoration(
-                  color: AppColors.accentGreen,
+                  gradient: _isTyping ? AppGradients.primaryGradient : null,
+                  color: _isTyping ? null : (isDark ? AppColors.darkBackground : AppColors.lightBackground),
                   shape: BoxShape.circle,
+                  boxShadow: _isTyping
+                      ? [
+                          BoxShadow(
+                            color: AppColors.primaryPurple.withOpacity(0.4),
+                            blurRadius: 12,
+                            offset: const Offset(0, 4),
+                          ),
+                        ]
+                      : null,
                 ),
                 child: Icon(
                   _isTyping ? Icons.send : Icons.mic,
-                  color: AppColors.white,
+                  color: _isTyping ? AppColors.white : AppColors.primaryPurple,
                   size: 22,
                 ),
               ),

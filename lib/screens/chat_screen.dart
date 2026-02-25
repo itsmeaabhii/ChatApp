@@ -20,20 +20,25 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
     return Scaffold(
-      backgroundColor: AppColors.backgroundGrey,
+      backgroundColor: isDark ? AppColors.darkChatBackground : AppColors.chatBackground,
       appBar: AppBar(
-        backgroundColor: AppColors.primaryGreen,
+        backgroundColor: AppColors.primaryPurple,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back, color: AppColors.white),
           onPressed: () => Navigator.pop(context),
         ),
         titleSpacing: 0,
         title: Row(
           children: [
-            CircleAvatar(
-              radius: 20,
-              backgroundImage: NetworkImage(widget.chat.avatarUrl),
+            Hero(
+              tag: 'avatar_${widget.chat.name}',
+              child: CircleAvatar(
+                radius: 20,
+                backgroundImage: NetworkImage(widget.chat.avatarUrl),
+              ),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -42,7 +47,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 children: [
                   Text(
                     widget.chat.name,
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
                           color: AppColors.white,
                           fontWeight: FontWeight.w600,
                         ),
@@ -51,7 +56,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     Text(
                       'Online',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: AppColors.onlineGreen.withOpacity(0.9),
+                            color: const Color(0xFF4CAF50),
                             fontSize: 12,
                           ),
                     ),
@@ -61,53 +66,33 @@ class _ChatScreenState extends State<ChatScreen> {
           ],
         ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.videocam),
-            onPressed: () {},
+          Container(
+            margin: const EdgeInsets.only(right: 4),
+            decoration: BoxDecoration(
+              color: AppColors.white.withOpacity(0.2),
+              shape: BoxShape.circle,
+            ),
+            child: IconButton(
+              icon: const Icon(Icons.videocam, color: AppColors.white),
+              onPressed: () {},
+            ),
           ),
-          IconButton(
-            icon: const Icon(Icons.call),
-            onPressed: () {},
-          ),
-          PopupMenuButton<String>(
-            icon: const Icon(Icons.more_vert),
-            onSelected: (value) {},
-            itemBuilder: (BuildContext context) {
-              return [
-                const PopupMenuItem(
-                  value: 'view_contact',
-                  child: Text('View contact'),
-                ),
-                const PopupMenuItem(
-                  value: 'media',
-                  child: Text('Media, links, and docs'),
-                ),
-                const PopupMenuItem(
-                  value: 'search',
-                  child: Text('Search'),
-                ),
-                const PopupMenuItem(
-                  value: 'mute',
-                  child: Text('Mute notifications'),
-                ),
-                const PopupMenuItem(
-                  value: 'wallpaper',
-                  child: Text('Wallpaper'),
-                ),
-              ];
-            },
+          Container(
+            margin: const EdgeInsets.only(right: 8),
+            decoration: BoxDecoration(
+              color: AppColors.white.withOpacity(0.2),
+              shape: BoxShape.circle,
+            ),
+            child: IconButton(
+              icon: const Icon(Icons.call, color: AppColors.white),
+              onPressed: () {},
+            ),
           ),
         ],
       ),
       body: Container(
         decoration: BoxDecoration(
-          color: AppColors.backgroundGrey,
-          image: DecorationImage(
-            image: const AssetImage('assets/chat_bg.png'),
-            fit: BoxFit.cover,
-            opacity: 0.05,
-            onError: (exception, stackTrace) {},
-          ),
+          color: isDark ? AppColors.darkChatBackground : AppColors.chatBackground,
         ),
         child: Column(
           children: [
@@ -115,7 +100,7 @@ class _ChatScreenState extends State<ChatScreen> {
             Expanded(
               child: ListView.builder(
                 controller: _scrollController,
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                 itemCount: messages.length,
                 itemBuilder: (context, index) {
                   final message = messages[index];
@@ -130,7 +115,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   messages.add(
                     MessageModel(
                       message: text,
-                      time: '${DateTime.now().hour}:${DateTime.now().minute}',
+                      time: '${DateTime.now().hour}:${DateTime.now().minute.toString().padLeft(2, '0')}',
                       isSent: true,
                       isDelivered: true,
                       isRead: false,
@@ -139,11 +124,13 @@ class _ChatScreenState extends State<ChatScreen> {
                 });
                 // Scroll to bottom
                 Future.delayed(const Duration(milliseconds: 100), () {
-                  _scrollController.animateTo(
-                    _scrollController.position.maxScrollExtent,
-                    duration: const Duration(milliseconds: 300),
-                    curve: Curves.easeOut,
-                  );
+                  if (_scrollController.hasClients) {
+                    _scrollController.animateTo(
+                      _scrollController.position.maxScrollExtent,
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeOut,
+                    );
+                  }
                 });
               },
             ),
